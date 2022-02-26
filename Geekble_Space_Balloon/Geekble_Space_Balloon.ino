@@ -4,6 +4,7 @@
 #include <Adafruit_Sensor.h>
 #include "Adafruit_BME680.h"
 #define SEALEVELPRESSURE_HPA (1013.25)
+float Altitude_Set;
 Adafruit_BME680 bme; // I2C
 
 #include <SD.h>
@@ -30,6 +31,10 @@ void setup() {
   bme.setPressureOversampling(BME680_OS_4X);
   bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
   bme.setGasHeater(320, 150); // 320*C for 150 ms
+  Serial.print("Sensor Setting... ");
+  Altitude_Set = bme.readAltitude(SEALEVELPRESSURE_HPA);
+  Serial.print(Altitude_Set);
+  Serial.println(" Setting done.");
 
   // SD카드 모듈 상태 확인
   Serial.print("Initializing SD card..."); 
@@ -73,11 +78,12 @@ void loop() {
     myFile.print(bme.gas_resistance / 1000.0);
     myFile.print(" ");
 
-    float altitude = bme.readAltitude(SEALEVELPRESSURE_HPA) + 150;
+    float altitude = bme.readAltitude(SEALEVELPRESSURE_HPA) - Altitude_Set;
     Serial.print(altitude);
     Serial.println(" m");
     myFile.println(altitude);
-    display.showNumberDec(int(altitude), false, 4, 0);
+    if(altitude >= 10000.0) display.showNumberDec(int(altitude) / 1000, false, 4, 0);
+    else display.showNumberDec(int(altitude), false, 4, 0);
     
     myFile.close();
     //myFile.close();
