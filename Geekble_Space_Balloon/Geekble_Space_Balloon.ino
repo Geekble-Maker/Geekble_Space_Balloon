@@ -79,6 +79,8 @@ void loop() {
     myFile.print(" ");
 
     float altitude = bme.readAltitude(SEALEVELPRESSURE_HPA) - Altitude_Set;
+    Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
+    Serial.print(" m -> ");
     Serial.print(altitude);
     Serial.println(" m");
     myFile.println(altitude);
